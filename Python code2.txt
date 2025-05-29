@@ -1,0 +1,118 @@
+#max_depth
+best_max_depth = 6
+max_depth1 = range(1, 11, 1)
+best_rmse = float("inf")  
+test_best_rmse= float("inf")  
+for max_depth in max_depth1:
+    xgb_model = XGBRegressor( max_depth=max_depth)
+    xgb_model.fit(x_train, y_train)
+    
+    y_train_pred = xgb_model.predict(x_train)
+    rain_r2 = r2_score(y_train, y_train_pred)
+    y_test_pred = xgb_model.predict(x_test)
+    test_r2 = r2_score(y_test, y_test_pred)
+    if rain_r2>0.95:
+            param_grid = {'tree_method':["gpu_hist"],  
+    "objective":['reg:squarederror'], 'max_depth': [max_depth]}
+           
+            GS1 = GridSearchCV(estimator = XGBRegressor(), param_grid=param_grid,  
+                               n_jobs=-1,cv=5)
+            GS1.fit(x_train, y_train)
+            y_val_pred = GS1.predict(x_val)
+            val_rmse = np.sqrt(mean_squared_error(y_val, y_val_pred))
+            if val_rmse < best_rmse:
+                best_rmse = val_rmse
+                best_max_depth = max_depth
+                best_model = GS1.best_estimator_  
+            else:
+                print(f"max_depth = {max_depth} ，RSME fails to meet requirements")
+                   
+    else:
+        print(f"max_depth = {max_depth} 时，R² of training set fails to meet requirements")
+    
+
+
+print("max_depth：", best_max_depth)
+y_train_pred = best_model.predict(x_train)
+train_rmse = np.sqrt(mean_squared_error(y_train, y_train_pred))
+train_r2 = r2_score(y_train, y_train_pred)
+train_mae = mean_absolute_error(y_train, y_train_pred)
+print(f"{train_rmse}")
+print(f"{train_r2}")
+print(f"{train_mae}") 
+
+y_val_pred = best_model.predict(x_val)
+val_rmse = np.sqrt(mean_squared_error(y_val, y_val_pred))
+val_r2 = r2_score(y_val, y_val_pred)
+val_mae = mean_absolute_error(y_val, y_val_pred)
+print(f"{val_rmse}")
+print(f"{val_r2}")
+print(f"{val_mae}") 
+print("——————————————")
+y_test_pred = best_model.predict(x_test)
+test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+test_r2 = r2_score(y_test, y_test_pred)
+test_mae = mean_absolute_error(y_test, y_test_pred)
+print(f"{test_rmse}")
+print(f"{test_r2}")
+print(f"{test_mae}")
+
+
+
+#min_child_weight
+min_child_weight1 = range(1, 10, 1)
+best_min_child_weight = 1
+max_depth1=best_max_depth
+
+
+for min_child_weight in min_child_weight1:
+    xgb_model1 = XGBRegressor(max_depth=max_depth1,min_child_weight=min_child_weight)
+
+    xgb_model1.fit(x_train, y_train)
+    
+    y_train_pred = xgb_model.predict(x_train)
+    rain_r2 = r2_score(y_train, y_train_pred)
+    y_test_pred = xgb_model.predict(x_test)
+    test_r2 = r2_score(y_test, y_test_pred)
+    if rain_r2>0.95:
+            param_grid = {'tree_method': ['gpu_hist']
+    "objective":['reg:squarederror'],"max_depth":[max_depth1], 'min_child_weight': [min_child_weight]}
+            GS2 = GridSearchCV(estimator = XGBRegressor(), param_grid=param_grid,n_jobs=-1,cv=5)
+            GS2.fit(x_train, y_train)
+            y_val_pred = GS2.predict(x_val)
+            val_rmse = np.sqrt(mean_squared_error(y_val, y_val_pred))
+            if val_rmse < best_rmse:
+                best_rmse = val_rmse
+                best_min_child_weight = min_child_weight
+                best_model = GS2.best_estimator_
+                
+            else:
+                print(f"min_child_weight = {min_child_weight} 时，RSME fails to meet requirements")
+                
+    else:
+        print(f"min_child_weight = {min_child_weight} 时，R² of training set fails to meet requirements")
+
+print("max_depth：", best_max_depth)
+y_train_pred = best_model.predict(x_train)
+train_rmse = np.sqrt(mean_squared_error(y_train, y_train_pred))
+train_r2 = r2_score(y_train, y_train_pred)
+train_mae = mean_absolute_error(y_train, y_train_pred)
+print(f"{train_rmse}")
+print(f"{train_r2}")
+print(f"{train_mae}") 
+
+y_val_pred = best_model.predict(x_val)
+val_rmse = np.sqrt(mean_squared_error(y_val, y_val_pred))
+val_r2 = r2_score(y_val, y_val_pred)
+val_mae = mean_absolute_error(y_val, y_val_pred)
+print(f"{val_rmse}")
+print(f"{val_r2}")
+print(f"{val_mae}") 
+print("——————————————")
+y_test_pred = best_model.predict(x_test)
+test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+test_r2 = r2_score(y_test, y_test_pred)
+test_mae = mean_absolute_error(y_test, y_test_pred)
+print(f"{test_rmse}")
+print(f"{test_r2}")
+print(f"{test_mae}")

@@ -1,0 +1,83 @@
+#Mordred descriptor
+from rdkit import rdBase, Chem
+from rdkit.ML.Descriptors import MoleculeDescriptors
+from mordred import Calculator, descriptors
+import pandas as pd
+df = pd.read_excel(r'C:\Users\ASUS\Desktop\1.xlsx',sheet_name=0)
+smiles_data = df.loc[:,"SMILES"]
+descriptors_list=[]
+for i in smiles_data: 
+    mol = Chem.MolFromSmiles(i)
+    calc = Calculator(descriptors, ignore_3D=False)
+    mordred_descriptors = calc(mol)
+    descriptors_list.append(mordred_descriptors)
+mordred=pd.DataFrame(descriptors_list) 
+mordred.to_excel(r'C:\Users\ASUS\Desktop\Mordred.xlsx')
+print("Done")
+
+#RDKIT descriptor
+from rdkit import rdBase, Chem
+from rdkit.Chem import AllChem, Descriptors
+from rdkit.ML.Descriptors import MoleculeDescriptors
+import pandas as pd
+descriptor_names = [x[0] for x in Descriptors._descList]
+df = pd.read_excel(r'C:\Users\ASUS\Desktop\1.xlsx',sheet_name=0)
+smiles_data = df.loc[:,"SMILES"]
+descriptors_list=[]
+for i in smiles_data: 
+    try:
+        mol = Chem.MolFromSmiles(i)
+        calc = MoleculeDescriptors.MolecularDescriptorCalculator(descriptor_names)
+        rdkit_descriptors = calc.CalcDescriptors(mol)
+        descriptors_list.append(rdkit_descriptors)
+    except:
+        error_dict = {"error": "true"}
+        descriptors_list.append(error_dict)
+RDKIT=pd.DataFrame(descriptors_list, columns=descriptor_names, index=smiles_data) 
+RDKIT.to_excel(r'C:\Users\ASUS\Desktop\RDKIT.xlsx')
+print("Done")
+
+#Morgan fingerprint 
+import pandas as pd
+import numpy as np
+from rdkit import Chem
+from rdkit.Chem import AllChem
+df = pd.read_excel("C:\\Users\\ASUS\\Desktop\\1.xlsx",sheet_name=0)
+data=df.loc[:,"SMILES"]
+radius=1
+nBits=1024
+fingerprints=[]
+for i in data:
+    mol = Chem.MolFromSmiles(i)
+    if mol is not None:  
+        fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=nBits)
+        fingerprint = list(fp.ToBitString())        
+        fingerprints.append(fingerprint)
+    else:
+        fingerprints.append(None) 
+df["Morgan"] = fingerprints
+df.to_excel('C:\\Users\\ASUS\\Desktop\\Morgan.xlsx', index=False)
+print("Done")
+
+#MACCS fingerprint
+import pandas as pd
+import numpy as np
+from rdkit import Chem
+from rdkit.Chem import MACCSkeys
+radius = 2
+nBits = 2048
+df = pd.read_excel('C:\\Users\\ASUS\\Desktop\\1.xlsx')
+data=df.loc[:,"SMILES"]
+fingerprints=[]
+for i in data:
+    mol = Chem.MolFromSmiles(i)
+    if mol is not None:
+        fp = MACCSkeys.GenMACCSKeys(mol)
+        fingerprint = fp.ToBitString()
+        fingerprints.append(fingerprint)
+    else:
+        fingerprints.append(None)  
+df["MACCS"] = fingerprints
+output_excel_path = "output_with_fingerprints.xlsx"
+df.to_excel('C:\\Users\\ASUS\\Desktop\\MACCS.xlsx', index=False)
+print("Done")

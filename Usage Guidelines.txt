@@ -1,0 +1,5 @@
+① The user must ensure that the correct python and sklearn databases are available on their computer;
+
+② The user is given the raw values of the three descriptors “log KOW, V, and B” for each substance;
+
+③ Driving the “Koc-Mobile for Users.py” program to complete the prediction.
